@@ -22,6 +22,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -38,7 +39,7 @@ import android.widget.ImageView;
 import android.widget.OverScroller;
 import android.widget.Scroller;
 
-public class ZoomableImageView extends ImageView {
+public class ZoomableImageView extends AppCompatImageView {
 
     private static final String TAG = "ImageViewZoom";
 
@@ -66,12 +67,6 @@ public class ZoomableImageView extends ImageView {
 
     public ZoomableImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(attrs);
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public ZoomableImageView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
         init(attrs);
     }
 
@@ -159,7 +154,7 @@ public class ZoomableImageView extends ImageView {
         }
     }
 
-    class ImageViewZoom extends ImageView {
+    class ImageViewZoom extends AppCompatImageView {
 
         /**
          * Hold a reference to the current animator, so that it can be canceled mid-way.
@@ -179,12 +174,6 @@ public class ZoomableImageView extends ImageView {
 
         public ImageViewZoom(Context context, AttributeSet attrs, int defStyleAttr) {
             super(context, attrs, defStyleAttr);
-            init();
-        }
-
-        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-        public ImageViewZoom(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-            super(context, attrs, defStyleAttr, defStyleRes);
             init();
         }
 
@@ -378,7 +367,7 @@ public class ZoomableImageView extends ImageView {
         }
     }
 
-    static class TouchImageView extends ImageView {
+    static class TouchImageView extends AppCompatImageView {
 
         private static final String DEBUG = "DEBUG";
 
@@ -1528,21 +1517,16 @@ public class ZoomableImageView extends ImageView {
             }
         }
 
-        @TargetApi(Build.VERSION_CODES.GINGERBREAD)
         private class CompatScroller {
             Scroller scroller;
             OverScroller overScroller;
             boolean isPreGingerbread;
 
             public CompatScroller(Context context) {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
-                    isPreGingerbread = true;
-                    scroller = new Scroller(context);
 
-                } else {
-                    isPreGingerbread = false;
-                    overScroller = new OverScroller(context);
-                }
+                isPreGingerbread = false;
+                overScroller = new OverScroller(context);
+
             }
 
             public void fling(int startX, int startY, int velocityX, int velocityY, int minX, int maxX, int minY, int maxY) {
@@ -1595,14 +1579,10 @@ public class ZoomableImageView extends ImageView {
             }
         }
 
-        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
         private void compatPostOnAnimation(Runnable runnable) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                postOnAnimation(runnable);
 
-            } else {
-                postDelayed(runnable, 1000 / 60);
-            }
+            postDelayed(runnable, 1000 / 60);
+
         }
 
         private class ZoomVariables {
