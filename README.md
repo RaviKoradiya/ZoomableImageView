@@ -38,7 +38,7 @@ dependencies {
             android:layout_height="300dp"
             android:scaleType="centerCrop"
             android:src="@drawable/test3"
-            app:image_url="http://www.natural-beginning.com/wp-content/uploads/2013/09/natural-beginning-home-4.png" />
+            app:image_url="http://..." />
 ```
 ```java
         ZoomableImageView zoomableImageView = (ZoomableImageView) findViewById(R.id.iv_zoomable);
