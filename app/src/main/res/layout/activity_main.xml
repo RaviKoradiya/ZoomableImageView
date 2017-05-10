@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,15 +12,19 @@
         android:orientation="vertical">
 
         <com.ravikoradiya.zoomableimageview.ZoomableImageView
+            android:id="@+id/iv_zoomable"
             android:layout_width="match_parent"
             android:layout_height="300dp"
             android:scaleType="centerCrop"
             android:src="@drawable/test" />
+
         <com.ravikoradiya.zoomableimageview.ZoomableImageView
             android:layout_width="match_parent"
             android:layout_height="300dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/test3" />
+            android:src="@drawable/test3"
+            app:image_url="http://www.natural-beginning.com/wp-content/uploads/2013/09/natural-beginning-home-4.png" />
+
         <com.ravikoradiya.zoomableimageview.ZoomableImageView
             android:layout_width="200dp"
             android:layout_height="100dp"

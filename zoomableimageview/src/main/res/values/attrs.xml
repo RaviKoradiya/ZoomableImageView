@@ -2,5 +2,7 @@
 <resources>
     <declare-styleable name="ZoomableImageView">
         <attr name="animation_speed" format="integer"></attr>
+        <attr name="placeholder_id" format="reference"></attr>
+        <attr name="image_url" format="string"></attr>
     </declare-styleable>
 </resources>

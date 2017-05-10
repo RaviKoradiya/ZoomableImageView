@@ -39,6 +39,10 @@ import android.widget.ImageView;
 import android.widget.OverScroller;
 import android.widget.Scroller;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
+
 public class ZoomableImageView extends AppCompatImageView {
 
     private static final String TAG = "ImageViewZoom";
@@ -48,6 +52,14 @@ public class ZoomableImageView extends AppCompatImageView {
     static TouchImageView touchImageView;
     Context mContext;
     private ViewGroup viewGroup;
+
+    int placeholderId;
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    String imageUrl;
 
     /**
      * The system "short" animation time duration, in milliseconds. This duration is ideal for
@@ -91,6 +103,8 @@ public class ZoomableImageView extends AppCompatImageView {
             TypedArray ta = mContext.obtainStyledAttributes(attrs, R.styleable.ZoomableImageView, 0, 0);
             try {
                 mShortAnimationDuration = ta.getInteger(R.styleable.ZoomableImageView_animation_speed, mShortAnimationDuration);
+                placeholderId = ta.getResourceId(R.styleable.ZoomableImageView_placeholder_id, -1);
+                imageUrl = ta.getString(R.styleable.ZoomableImageView_image_url);
             } finally {
                 ta.recycle();
             }
@@ -99,6 +113,20 @@ public class ZoomableImageView extends AppCompatImageView {
         post(new Runnable() {
             @Override
             public void run() {
+
+                if (imageUrl != null) {
+                    Glide
+                            .with(getContext())
+                            .load(imageUrl)
+                            .asBitmap()
+                            .into(new SimpleTarget<Bitmap>() {
+                                @Override
+                                public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
+                                    setImageBitmap(resource); // Possibly runOnUiThread()
+                                }
+                            });
+                }
+
                 inflateRootLayout();
             }
         });
@@ -216,7 +244,6 @@ public class ZoomableImageView extends AppCompatImageView {
 
 
             Drawable drawable = imageView.getDrawable();
-
 
 
 //            Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
