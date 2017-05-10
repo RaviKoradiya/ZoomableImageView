@@ -29,6 +29,8 @@ dependencies {
 - You can set animation speed with parameter `animation_speed`
 - You also can load any web url with `image_url` or `setImageUrl(String imageUrl)`
 
+![Demo](/../master/demo_image/ezgif-2-ccb935fa45.gif?raw=true "Demo")
+
 
 ## Usage
 
