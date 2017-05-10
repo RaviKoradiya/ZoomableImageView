@@ -215,9 +215,13 @@ public class ZoomableImageView extends AppCompatImageView {
             final int width;
 
 
-            Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+            Drawable drawable = imageView.getDrawable();
 
-            setImageBitmap(bitmap);
+
+
+//            Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+
+            setImageDrawable(drawable);
             // Calculate the starting and ending bounds for the zoomed-in image. This step
             // involves lots of math. Yay, math.
             final Rect startBounds = new Rect();
@@ -251,13 +255,13 @@ public class ZoomableImageView extends AppCompatImageView {
 
             if ((((float) rootLayout.getWidth()) * 1f) /
                     ((float) rootLayout.getHeight()) >
-                    (((float) bitmap.getWidth()) * 1f) /
-                            ((float) bitmap.getHeight())) {
+                    (((float) drawable.getIntrinsicWidth()) * 1f) /
+                            ((float) drawable.getIntrinsicHeight())) {
                 height = rootLayout.getHeight();
-                width = (bitmap.getWidth() * height) / bitmap.getHeight();
+                width = (drawable.getIntrinsicWidth() * height) / drawable.getIntrinsicHeight();
             } else {
                 width = rootLayout.getWidth();
-                height = (bitmap.getHeight() * width) / bitmap.getWidth();
+                height = (drawable.getIntrinsicHeight() * width) / drawable.getIntrinsicWidth();
             }
             int top = 0;
             int bottom = 0;
