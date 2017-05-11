@@ -4,14 +4,22 @@ ZoomableImageView is build to open any image in full screen.
 
 [![](https://jitpack.io/v/RaviKoradiya/ZoomableImageView.svg)](https://jitpack.io/#RaviKoradiya/ZoomableImageView)
 
+![Demo](/../master/demo_image/ezgif-2-ccb935fa45.gif?raw=true "Demo")
+
+## Features
+- Zoom any image from any context like activity, fragment or any scrollable container. 
+- After zooming you can pinch zoom or double tap to zoom. 
+- You can set animation speed with parameter `animation_speed`
+- You also can load any web url with `image_url` or `setImageUrl(String imageUrl)`
+
 ## Dependency
 
-Add this in your root `build.gradle` file (**not** your module `build.gradle` file):
+Add this in your project level `build.gradle` file (**not** your module `build.gradle` file):
 
 ```gradle
 allprojects {
 	repositories {
-        maven { url "https://jitpack.io" }
+        maven { url "https://jitpack.io" } // add this line
     }
 }
 ```
@@ -22,15 +30,6 @@ dependencies {
     compile 'com.github.RaviKoradiya:ZoomableImageView:1.0.2'
 }
 ```
-
-## Features
-- Zoom any image from any context like activity, fragment or any scrollable container. 
-- After zooming you can pinch zoom or double tap to zoom. 
-- You can set animation speed with parameter `animation_speed`
-- You also can load any web url with `image_url` or `setImageUrl(String imageUrl)`
-
-![Demo](/../master/demo_image/ezgif-2-ccb935fa45.gif?raw=true "Demo")
-
 
 ## Usage
 
