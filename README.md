@@ -1,7 +1,10 @@
+<meta name="thumbnail" content="/../master/demo_image/ezgif-2-ccb935fa45.gif" />
+
 # ZoomableImageView
 
 ZoomableImageView is build to open any image in full screen.
 
+[![Platform](https://img.shields.io/badge/platform-android-green.svg)](http://developer.android.com/index.html)
 [![](https://jitpack.io/v/RaviKoradiya/ZoomableImageView.svg)](https://jitpack.io/#RaviKoradiya/ZoomableImageView)
 
 ![Demo](/../master/demo_image/ezgif-2-ccb935fa45.gif?raw=true "Demo")
@@ -27,7 +30,7 @@ allprojects {
 Then, add the library to your module `build.gradle`
 ```gradle
 dependencies {
-    compile 'com.github.RaviKoradiya:ZoomableImageView:1.0.2'
+    compile 'com.github.RaviKoradiya:ZoomableImageView:<latest version>'
 }
 ```
 
