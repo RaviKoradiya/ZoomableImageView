@@ -1,4 +1,4 @@
-<meta name="thumbnail" content="/../master/demo_image/ezgif-2-ccb935fa45.gif" />
+<meta name="thumbnail" content="https://raw.githubusercontent.com/RaviKoradiya/ZoomableImageView/master/demo_image/ezgif-2-ccb935fa45.gif" />
 
 # ZoomableImageView
 
@@ -30,7 +30,7 @@ allprojects {
 Then, add the library to your module `build.gradle`
 ```gradle
 dependencies {
-    compile 'com.github.RaviKoradiya:ZoomableImageView:<latest version>'
+    compile 'com.github.RaviKoradiya:ZoomableImageView:1.0.2'
 }
 ```
 
