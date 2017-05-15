@@ -22,10 +22,12 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.IntDef;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -110,18 +112,40 @@ public class ZoomableImageView extends AppCompatImageView {
             }
         }
 
+
         post(new Runnable() {
             @Override
             public void run() {
 
                 if (imageUrl != null) {
-                    Glide
-                            .with(getContext())
+//                    setOnKeyListener(new View.OnKeyListener() {
+//                        @Override
+//                        public boolean onKey(View v, int keyCode, KeyEvent event) {
+//
+//                            if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+//
+//                                if (touchImageView.getVisibility() == VISIBLE) {
+//                                    Log.e(TAG, "onKey: open");
+//                                    touchImageView.performClick();
+//                                    clearFocus();
+//                                    return true;
+//                                } else {
+//                                    Log.e(TAG, "onKey: close");
+//                                    return true;
+//                                }
+//
+//                            }
+//                            return true;
+//                        }
+//                    });
+
+                    Glide.with(getContext())
                             .load(imageUrl)
                             .asBitmap()
                             .into(new SimpleTarget<Bitmap>() {
                                 @Override
-                                public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
+                                public void onResourceReady(Bitmap resource, GlideAnimation
+                                        glideAnimation) {
                                     setImageBitmap(resource); // Possibly runOnUiThread()
                                 }
                             });
@@ -134,8 +158,8 @@ public class ZoomableImageView extends AppCompatImageView {
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ZoomableImageView.this.getDrawable() != null) {
 
+                if (ZoomableImageView.this.getDrawable() != null) {
                     if (rootLayout == null) {
                         inflateRootLayout();
                     } else if (rootLayout.getParent() != null) {
@@ -143,6 +167,8 @@ public class ZoomableImageView extends AppCompatImageView {
                     }
                     viewGroup.addView(rootLayout, -1, -1);
                     imageViewZoom.zoomImageFromThumb(ZoomableImageView.this);
+
+                    rootLayout.requestFocus(FOCUS_DOWN);
                 }
             }
         });
@@ -162,23 +188,57 @@ public class ZoomableImageView extends AppCompatImageView {
 
         public ColorableFrameLayout(Context context) {
             super(context);
+            init();
         }
 
         public ColorableFrameLayout(Context context, AttributeSet attrs) {
             super(context, attrs);
+            init();
         }
 
         public ColorableFrameLayout(Context context, AttributeSet attrs, int defStyleAttr) {
             super(context, attrs, defStyleAttr);
+            init();
         }
 
         @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         public ColorableFrameLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
             super(context, attrs, defStyleAttr, defStyleRes);
+            init();
+        }
+
+        void init() {
+
+            setFocusable(true);
+            setFocusableInTouchMode(true);
+
         }
 
         void setColorAlpha(int alpha) {
             setBackgroundColor(Color.argb(alpha, Color.red(background), Color.green(background), Color.blue(background)));
+        }
+
+        @Override
+        public boolean dispatchKeyEventPreIme(KeyEvent event) {
+//        Log.e(TAG, "dispatchKeyEventPreIme(" + event + ")");
+            if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                KeyEvent.DispatcherState state = getKeyDispatcherState();
+                if (state != null) {
+                    if (event.getAction() == KeyEvent.ACTION_DOWN
+                            && event.getRepeatCount() == 0) {
+                        state.startTracking(event, this);
+                        return true;
+                    } else if (event.getAction() == KeyEvent.ACTION_UP
+                            && !event.isCanceled() && state.isTracking(event)) {
+                        if (touchImageView.getVisibility() == VISIBLE) {
+                            touchImageView.performClick();
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return super.dispatchKeyEventPreIme(event);
         }
     }
 
@@ -217,12 +277,22 @@ public class ZoomableImageView extends AppCompatImageView {
         }
 
         public void setPaddingBottom(float f) {
-            setPadding(0, getPaddingTop(), 0, (int) f);
+            setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight(), (int) f);
             invalidate();
         }
 
         public void setPaddingTop(float f) {
-            setPadding(0, (int) f, 0, getPaddingBottom());
+            setPadding(getPaddingLeft(), (int) f, getPaddingRight(), getPaddingBottom());
+            invalidate();
+        }
+
+        public void setPaddingLeft(float f) {
+            setPadding((int) f, getPaddingTop(), getPaddingRight(), getPaddingBottom());
+            invalidate();
+        }
+
+        public void setPaddingRight(float f) {
+            setPadding(getPaddingLeft(), getPaddingTop(), (int) f, getPaddingBottom());
             invalidate();
         }
 
@@ -243,8 +313,7 @@ public class ZoomableImageView extends AppCompatImageView {
             final int width;
 
 
-            Drawable drawable = imageView.getDrawable();
-
+            final Drawable drawable = imageView.getDrawable();
 
 //            Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
 
@@ -301,9 +370,7 @@ public class ZoomableImageView extends AppCompatImageView {
                 }
             }
 
-            // Construct and run the parallel animation of the four translation and scale properties
-            // (X, Y, SCALE_X, and SCALE_Y).
-            AnimatorSet set = new AnimatorSet();
+            final AnimatorSet set = new AnimatorSet();
             set
                     .play(ObjectAnimator.ofFloat(ImageViewZoom.this, View.X, startBounds.left,
                             finalBounds.left + ((rootLayout.getWidth() - width) / 2)))
@@ -358,20 +425,51 @@ public class ZoomableImageView extends AppCompatImageView {
                     touchImageView.setVisibility(GONE);
                     ImageViewZoom.this.setVisibility(VISIBLE);
 
-                    // Animate the four positioning/sizing properties in parallel, back to their
-                    // original values.
                     AnimatorSet set = new AnimatorSet();
-                    set.play(ObjectAnimator.ofFloat(ImageViewZoom.this, View.X, ImageViewZoom.this.getX(), (float) startBounds.left))
-                            .with(ObjectAnimator.ofFloat(ImageViewZoom.this, View.Y, ImageViewZoom.this.getY(), (float) startBounds.top))
-                            .with(ObjectAnimator.ofFloat(ImageViewZoom.this, "width", (float) ImageViewZoom.this.getWidth(), (float) startBounds.width()))
-                            .with(ObjectAnimator.ofFloat(ImageViewZoom.this, "height", (float) ImageViewZoom.this.getHeight(), (float) startBounds.height()))
-                            .with(ObjectAnimator.ofFloat(ImageViewZoom.this, "paddingTop", ImageViewZoom.this.getPaddingTop(), (float) (-finalTop)))
-                            .with(ObjectAnimator.ofFloat(ImageViewZoom.this, "paddingBottom", ImageViewZoom.this.getPaddingBottom(), (float) (-finalBottom)))
-                            .with(ObjectAnimator.ofInt(rootLayout, "colorAlpha", 255, 0));
 
+                    if (!touchImageView.isZoomed()) {
+                        set.play(ObjectAnimator.ofFloat(ImageViewZoom.this, View.X, ImageViewZoom.this.getX(), (float) startBounds.left))
+                                .with(ObjectAnimator.ofFloat(ImageViewZoom.this, View.Y, ImageViewZoom.this.getY(), (float) startBounds.top))
+                                .with(ObjectAnimator.ofFloat(ImageViewZoom.this, "width", (float) ImageViewZoom.this.getWidth(), (float) startBounds.width()))
+                                .with(ObjectAnimator.ofFloat(ImageViewZoom.this, "height", (float) ImageViewZoom.this.getHeight(), (float) startBounds.height()))
+                                .with(ObjectAnimator.ofFloat(ImageViewZoom.this, "paddingTop", ImageViewZoom.this.getPaddingTop(), (float) (-finalTop)))
+                                .with(ObjectAnimator.ofFloat(ImageViewZoom.this, "paddingBottom", ImageViewZoom.this.getPaddingBottom(), (float) (-finalBottom)))
+                                .with(ObjectAnimator.ofInt(rootLayout, "colorAlpha", 255, 0));
+
+                    } else {
+
+                        RectF rectF = touchImageView.getZoomedRect();
+
+                        float top = -rectF.top * touchImageView.getImageHeight();
+                        float bottom = -touchImageView.getImageHeight() + rectF.bottom * touchImageView.getImageHeight();
+                        float left = -rectF.left * touchImageView.getImageWidth();
+                        float right = -touchImageView.getImageWidth() + rectF.right * touchImageView.getImageWidth();
+
+                        float height = touchImageView.getImageHeight();
+                        float width = touchImageView.getImageWidth();
+
+                        if (height < touchImageView.getHeight() && width > touchImageView.getWidth()) {
+                            top = bottom = (touchImageView.getHeight() - height) / 2;
+                        }
+
+                        if (height > touchImageView.getHeight() && width < touchImageView.getWidth()) {
+                            left = right = (touchImageView.getWidth() - width) / 2;
+                        }
+
+                        set.play(ObjectAnimator.ofFloat(ImageViewZoom.this, View.X, Math.min(0, ImageViewZoom.this.getX()), (float) startBounds.left))
+                                .with(ObjectAnimator.ofFloat(ImageViewZoom.this, View.Y, Math.min(0, ImageViewZoom.this.getY()), (float) startBounds.top))
+                                .with(ObjectAnimator.ofFloat(ImageViewZoom.this, "width", touchImageView.getWidth(), (float) startBounds.width()))
+                                .with(ObjectAnimator.ofFloat(ImageViewZoom.this, "height", touchImageView.getHeight(), (float) startBounds.height()))
+                                .with(ObjectAnimator.ofFloat(ImageViewZoom.this, "paddingTop", top, -finalTop))
+                                .with(ObjectAnimator.ofFloat(ImageViewZoom.this, "paddingBottom", bottom, -finalBottom))
+                                .with(ObjectAnimator.ofFloat(ImageViewZoom.this, "paddingLeft", left, 0))
+                                .with(ObjectAnimator.ofFloat(ImageViewZoom.this, "paddingRight", right, 0))
+                                .with(ObjectAnimator.ofInt(rootLayout, "colorAlpha", 255, 0));
+                    }
                     set.setDuration(mShortAnimationDuration);
                     set.setInterpolator(new DecelerateInterpolator());
                     set.addListener(new AnimatorListenerAdapter() {
+
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             ImageViewZoom.this.setVisibility(View.GONE);
@@ -387,8 +485,6 @@ public class ZoomableImageView extends AppCompatImageView {
                         }
                     });
 
-//                    ImageViewZoom.this.setX(finalBounds.left);
-//                    ImageViewZoom.this.setY(finalBounds.top + ((rootLayout.getHeight() - height) / 2));
                     imageView.setVisibility(INVISIBLE);
                     ImageViewZoom.this.setVisibility(View.VISIBLE);
                     set.start();
@@ -1633,7 +1729,6 @@ public class ZoomableImageView extends AppCompatImageView {
         private void printMatrixInfo() {
             float[] n = new float[9];
             matrix.getValues(n);
-            Log.d(DEBUG, "Scale: " + n[Matrix.MSCALE_X] + " TransX: " + n[Matrix.MTRANS_X] + " TransY: " + n[Matrix.MTRANS_Y]);
         }
     }
 }
