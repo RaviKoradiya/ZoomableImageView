@@ -28,7 +28,7 @@ allprojects {
 Then, add the library to your module `build.gradle`
 ```gradle
 dependencies {
-    compile 'com.github.RaviKoradiya:ZoomableImageView:1.0.2'
+    compile 'com.github.RaviKoradiya:ZoomableImageView:1.1.1'
 }
 ```
 
