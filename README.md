@@ -12,7 +12,7 @@ ZoomableImageView is build to open any image in full screen.
 ## Features
 - Zoom any image from any context like activity, fragment or any scrollable container. 
 - After zooming you can pinch zoom or double tap to zoom. 
-- You can set animation speed with parameter `animation_speed`
+- You can set animation speed in milliseconds with parameter `animation_speed` or `setAnimationSpeed(int speed)`
 - You also can load any web url with `image_url` or `setImageUrl(String imageUrl)`
 
 ## Dependency
