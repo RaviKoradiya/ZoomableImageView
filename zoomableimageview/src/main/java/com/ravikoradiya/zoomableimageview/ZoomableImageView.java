@@ -60,6 +60,10 @@ public class ZoomableImageView extends AppCompatImageView {
         mShortAnimationDuration = speed;
     }
 
+    public void setBackgroundColor(int backgroundColor) {
+        backgroundColor = backgroundColor;
+    }
+
 
     void init(AttributeSet attrs) {
 
